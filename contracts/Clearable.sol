@@ -4,11 +4,9 @@ import "eip1996/contracts/Holdable.sol";
 import "./IClearable.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-
 contract Clearable is Holdable, IClearable, Ownable {
 
     using StringUtil for string;
-
 
     struct ClearableTransfer {
         address orderer;
@@ -26,8 +24,6 @@ contract Clearable is Holdable, IClearable, Ownable {
     constructor() public{
         clearableAgent = msg.sender; 
     }
-
-
 
     function orderTransfer(string calldata operationId, address to, uint256 value) external returns (bool) {
         require(to != address(0), "Payee address must not be zero address");
@@ -135,7 +131,6 @@ contract Clearable is Holdable, IClearable, Ownable {
     }
 
     function _orderTransfer(string memory operationId, address orderer, address from, address to, uint256 value) internal returns (bool) {
-
         super._hold(
             operationId,
             orderer,

@@ -6,7 +6,6 @@ const Clearable = artifacts.require('ClearableMock');
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 contract('Clearable', (accounts) => {
-    let holdable;
     let operationId;
     let reason = 'test';
 
@@ -94,7 +93,7 @@ contract('Clearable', (accounts) => {
             );
         });
 
-        it('should successfully create a hold and emit a ClearableTransferOrdered event', async() => {
+        it('should successfully create a transfer and emit a ClearableTransferOrdered event', async() => {
               const tx = await clearable.orderTransfer(
                   operationId,
                   payee,
@@ -218,7 +217,7 @@ contract('Clearable', (accounts) => {
             );
         });
 
-        it('should successfully create a hold and emit a ClearableTransferOrdered event', async() => {
+        it('should successfully create a transfer and emit a ClearableTransferOrdered event', async() => {
             const tx = await clearable.orderTransferFrom(
                 operationId,
                 payer,
