@@ -1,17 +1,16 @@
 pragma solidity ^0.5.0;
 
 import "eip1996/contracts/Holdable.sol";
-import "./libraries/StringUtil.sol";
 import "./IClearable.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
-contract Clearable is Holdable, IClearable, Ownable{
+contract Clearable is Holdable, IClearable, Ownable {
 
-	using StringUtil for string;
+    using StringUtil for string;
 
 
-	struct ClearableTransfer {
+    struct ClearableTransfer {
         address orderer;
         address from;
         address to;
@@ -21,135 +20,123 @@ contract Clearable is Holdable, IClearable, Ownable{
     }
 
     mapping(bytes32 => ClearableTransfer) internal clearableTransfers;
-	address clearableAgent;
+    mapping(address => mapping(address => bool)) private operators;
+    address clearableAgent;
 
-
-
-	constructor(){
-		clearableAgent = msg.sender; 
-	}
+    constructor() public{
+        clearableAgent = msg.sender; 
+    }
 
 
 
     function orderTransfer(string calldata operationId, address to, uint256 value) external returns (bool) {
-    	
-    	return _orderTransfer(
+        require(to != address(0), "Payee address must not be zero address");
+        return _orderTransfer(
             operationId,
             msg.sender,
             msg.sender,
             to,
             value
-    		);
+            );
     }
 
     function orderTransferFrom(string calldata operationId, address from, address to, uint256 value) external returns (bool) {
-
-
-    	require(from != address(0), "Payer address must not be zero address");
-    	require(isHoldOperatorFor(from, msg.sender), "This operator is not authorized");
-    	
-
-    	return _orderTransfer(
+        require(to != address(0), "Payee address must not be zero address");
+        require(from != address(0), "Payer address must not be zero address");
+        require(operators[from][msg.sender] == true, "This operator is not authorized");
+        return _orderTransfer(
             operationId,
             msg.sender,
             from,
             to,
             value
-    		);
+            );
     }
 
     function cancelTransfer(string calldata operationId) external returns (bool) {
-
-    	ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-    	require (ClearableTransfer.status == ClearableTransferStatusCode.Ordered);
-
-
-
+        ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
+        require (msg.sender == newClearableTransfer.from, "Can only be processed by the payer");
+        require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered, "A transfer can only be cancelled in status Ordered");
+        super._releaseHold(operationId);
+        newClearableTransfer.status = ClearableTransferStatusCode.Cancelled;
+        emit ClearableTransferCancelled(msg.sender, operationId);
+        return true;
     }
-
 
     function processClearableTransfer(string calldata operationId) external returns (bool) {
-
-    	ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-
-    	require (clearableAgent == msg.sender);
-    	require (ClearableTransfer.status == ClearableTransferStatusCode.Ordered);
-    	ClearableTransfer.status = ClearableTransferStatusCode.InProcess;
-
-    	
+        ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
+        require (msg.sender == clearableAgent, "Can only be processed by the agent");
+        require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered,  "A transfer can only be processed in status Ordered");
+        newClearableTransfer.status = ClearableTransferStatusCode.InProcess;
+        emit ClearableTransferInProcess(msg.sender, operationId);
+        return true;
     }
-
 
     function executeClearableTransfer(string calldata operationId) external returns (bool) {
+        ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
+        require (msg.sender == clearableAgent, "Can only be executed by the agent");
+        require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess,  "A transfer can only be executed in status Ordered or InProcess");
+        super._setHoldToExecuted(operationId, newClearableTransfer.value);
+        super._transfer(newClearableTransfer.from, newClearableTransfer.to, newClearableTransfer.value);
+        newClearableTransfer.status = ClearableTransferStatusCode.Executed;
+        emit ClearableTransferExecuted(msg.sender, operationId);
 
-    	ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-
-    	require (clearableAgent == msg.sender);
-    	require (ClearableTransfer.status == ClearableTransferStatusCode.Ordered);
-
-    	bool executeSuccessfull = super.executeHold(operationId, ClearableTransfer.value);
-    	if(executeSuccessfull){
-    		emit ClearableTransferInProcess(msg.sender, operationId);
-    		return true;
-    	}
-
+        return true;
     }
-
 
     function rejectClearableTransfer(string calldata operationId, string calldata reason) external returns (bool) {
+        ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
+        require (msg.sender == clearableAgent || newClearableTransfer.to == msg.sender, "Can only be rejected by the agent or the payee");
+        require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess, "A transfer can only be rejected in status Ordered or InProcess");
+        super._releaseHold(operationId);
+        newClearableTransfer.status = ClearableTransferStatusCode.Rejected;
+        emit ClearableTransferRejected(msg.sender, operationId, reason);
 
-    	ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-
-    	require (clearableAgent == msg.sender);
-    	require (ClearableTransfer.status == ClearableTransferStatusCode.Ordered || ClearableTransfer.status == ClearableTransferStatusCode.InProcess);
-    	
-    	bool rejectsuccessfull = super.releaseHold(operationId);
-    	if (rejectsuccessfull){
-    		emit ClearableTransferExecuted(msg.sender, operationId, reason);
-    		return true;
-    	}
+        return true;
     }
 
-
     function retrieveClearableTransferData(string calldata operationId) external view returns (address from, address to, uint256 value, ClearableTransferStatusCode status) {
-	    ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-	    return(
-	    	ClearableTransfer.from,
-	    	ClearableTransfer.to,
-	    	ClearableTransfer.value,
-	    	ClearableTransfer.status
-	    	);
-
+        ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
+        return(
+            newClearableTransfer.from,
+            newClearableTransfer.to,
+            newClearableTransfer.value,
+            newClearableTransfer.status
+            );
     }
 
     function authorizeClearableTransferOperator(address operator) external returns (bool) {
-    	authorizeHoldOperator(operator);
-    	emit AuthorizedClearableTransferOperator(operator, msg.sender);
-    	return true;
-    }
+        require (operators[msg.sender][operator] == false, "The operator is already authorized");
 
+        operators[msg.sender][operator] = true;
+        emit AuthorizedClearableTransferOperator(operator, msg.sender);
+        return true;
+    }
 
     function revokeClearableTransferOperator(address operator) external returns (bool) {
-    	revokeHoldOperator(operator);
-    	emit RevokedClearableTransferOperator(operator, msg.sender);
-    	return true;
+        require (operators[msg.sender][operator] == true, "The operator is already not authorized");
+
+        operators[msg.sender][operator] = false;
+        emit RevokedClearableTransferOperator(operator, msg.sender);
+        return true;
     }
+
     function isClearableTransferOperatorFor(address operator, address from) external view returns (bool) {
-    	isHoldOperatorFor(operator, from);
-    	return true;
-    }
-   
-
-
-    function defineClearableAgent (address newClearableAgent) onlyOwner returns (bool){
-    	clearableAgent = newClearableAgent;
-    	return true;
+        return operators[from][operator];
     }
 
+    function defineClearableAgent (address newClearableAgent) onlyOwner external  returns (bool) {
+        clearableAgent = newClearableAgent;
+        return true;
+    }
 
-     function _orderTransfer(string calldata operationId, address orderer, address from, address to, uint256 value) external returns (bool) {
+    function isClearableAgent(address agent) external returns (bool) {
+        return agent == clearableAgent;
+    }
 
-     	bool Ordersuccessfull = super._hold(
+    function _orderTransfer(string memory operationId, address orderer, address from, address to, uint256 value) internal returns (bool) {
+
+        super._hold(
             operationId,
             orderer,
             from,
@@ -158,21 +145,20 @@ contract Clearable is Holdable, IClearable, Ownable{
             value,
             0
         );
-        if (Ordersuccessfull) {
-        	clearableTransfers[operationId.toHash()].orderer = orderer;
-        	clearableTransfers[operationId.toHash()].from = from;
-        	clearableTransfers[operationId.toHash()].to = to;
-        	clearableTransfers[operationId.toHash()].clearableAgent = clearableAgent;
-        	clearableTransfers[operationId.toHash()].value = value;
-        	clearableTransfers[operationId.toHash()].status = ClearableTransferStatusCode.Ordered;
-            emit ClearableTransferOrdered(
-                orderer,
-                operationId,
-                from,
-                to,
-                value
-            );
-            return true;
-        }
+        clearableTransfers[operationId.toHash()].orderer = orderer;
+        clearableTransfers[operationId.toHash()].from = from;
+        clearableTransfers[operationId.toHash()].to = to;
+        clearableTransfers[operationId.toHash()].clearableAgent = clearableAgent;
+        clearableTransfers[operationId.toHash()].value = value;
+        clearableTransfers[operationId.toHash()].status = ClearableTransferStatusCode.Ordered;
+        emit ClearableTransferOrdered(
+            orderer,
+            operationId,
+            from,
+            to,
+            value
+        );
 
-	}
+        return true;
+    }
+}
