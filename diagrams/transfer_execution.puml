@@ -1,0 +1,9 @@
+@startuml
+UserA -> "Clearable Token": orderTransfer(to: UserB)
+"Clearable Token" -> Agent: ClearableTransferOrdered
+Agent-> "Clearable Token" : processClearableTransfer
+"Clearable Token" -> UserA: ClearableTransferInProcess
+Agent-> "Clearable Token" : executeClearableTransfer
+UserA -> UserB: transfer
+"Clearable Token" -> UserA: ClearableTransferExecuted
+@enduml
