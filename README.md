@@ -13,7 +13,7 @@ Feedback is appreciated and can given at [the discussion of the EIP](https://git
 > "In banking and finance, clearing denotes all activities from the time a commitment is made for a transaction until it is settled." [[1]][Clearing-Wikipedia] 
 
 ## Abstract
-The clearing process turns the promise of a transfer into the actual movement of money from one account to another. A clearing agent decides if the transfer can be executed or not. The amount which should be transferred is not deducted from the balance of the payer, but neither is it available for another transfer and therefore ensures, that the execution of the transfer will be successful when it is executed.
+The clearing process turns the promise of a transfer into the actual movement of money from one account to another. A clearing agent decides if the transfer can be executed or not. Until the agent verifies the operation, the amount to be transferred is not deducted from the balance of the payer, but neither is it available for another operation and therefore ensures, that the execution of the transfer will be successful when it is executed. The Clearable agent can do two things: (1) execute the transfer: the money is transferred to the account that was set as target. (2) reject the transfer: the transfer will not take place and the money will be made available again in the origin account.
 
 ## Sequence diagrams
 
