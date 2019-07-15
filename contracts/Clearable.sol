@@ -14,10 +14,10 @@ contract Clearable is Holdable, IClearable, Ownable {
 
     mapping(bytes32 => ClearableTransfer) internal clearableTransfers;
     mapping(address => mapping(address => bool)) private operators;
-    address clearableAgent;
+    address clearingAgent;
 
     constructor() public{
-        clearableAgent = msg.sender; 
+        clearingAgent = msg.sender; 
     }
 
     function orderTransfer(string calldata operationId, address to, uint256 value) external returns (bool) {
@@ -57,7 +57,7 @@ contract Clearable is Holdable, IClearable, Ownable {
 
     function processClearableTransfer(string calldata operationId) external returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-        require (msg.sender == clearableAgent, "Can only be processed by the agent");
+        require (msg.sender == clearingAgent, "Can only be processed by the agent");
         require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered,  "A transfer can only be processed in status Ordered");
         newClearableTransfer.status = ClearableTransferStatusCode.InProcess;
         emit ClearableTransferInProcess(msg.sender, operationId);
@@ -67,7 +67,7 @@ contract Clearable is Holdable, IClearable, Ownable {
     function executeClearableTransfer(string calldata operationId) external returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
         Hold storage newClearableHold = holds[operationId.toHash()];
-        require (msg.sender == clearableAgent, "Can only be executed by the agent");
+        require (msg.sender == clearingAgent, "Can only be executed by the agent");
         require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess,  "A transfer can only be executed in status Ordered or InProcess");
         super._setHoldToExecuted(operationId, newClearableHold.value);
         super._transfer(newClearableHold.origin, newClearableHold.target, newClearableHold.value);
@@ -79,7 +79,7 @@ contract Clearable is Holdable, IClearable, Ownable {
 
     function rejectClearableTransfer(string calldata operationId, string calldata reason) external returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-        require (msg.sender == clearableAgent, "Can only be rejected by the agent");
+        require (msg.sender == clearingAgent, "Can only be rejected by the agent");
         require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess, "A transfer can only be rejected in status Ordered or InProcess");
         super._releaseHold(operationId);
         newClearableTransfer.status = ClearableTransferStatusCode.Rejected;
@@ -119,13 +119,13 @@ contract Clearable is Holdable, IClearable, Ownable {
         return operators[from][operator];
     }
 
-    function defineClearableAgent (address newClearableAgent) onlyOwner external  returns (bool) {
-        clearableAgent = newClearableAgent;
+    function defineClearingAgent (address newClearingAgent) onlyOwner external  returns (bool) {
+        clearingAgent = newClearingAgent;
         return true;
     }
 
-    function isClearableAgent(address agent) external returns (bool) {
-        return agent == clearableAgent;
+    function isClearingAgent(address agent) external returns (bool) {
+        return agent == clearingAgent;
     }
 
     function _orderTransfer(string memory operationId, address orderer, address from, address to, uint256 value) internal returns (bool) {
@@ -134,7 +134,7 @@ contract Clearable is Holdable, IClearable, Ownable {
             orderer,
             from,
             to,
-            clearableAgent,
+            clearingAgent,
             value,
             0
         );
