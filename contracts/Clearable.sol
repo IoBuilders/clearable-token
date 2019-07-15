@@ -82,7 +82,7 @@ contract Clearable is Holdable, IClearable, Ownable {
 
     function rejectClearableTransfer(string calldata operationId, string calldata reason) external returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-        require (msg.sender == clearableAgent || newClearableTransfer.to == msg.sender, "Can only be rejected by the agent or the payee");
+        require (msg.sender == clearableAgent, "Can only be rejected by the agent");
         require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess, "A transfer can only be rejected in status Ordered or InProcess");
         super._releaseHold(operationId);
         newClearableTransfer.status = ClearableTransferStatusCode.Rejected;

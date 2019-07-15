@@ -258,14 +258,14 @@ contract('Clearable', (accounts) => {
             );
         });
 
-        it('should revert if anybody else instead of the agent or the payee call it', async() => {
+        it('should revert if anybody else instead of the agent call it', async() => {
             await truffleAssert.reverts(
                 clearable.rejectClearableTransfer(
                     operationId,
                     reason,
                     {from: payer}
                 ),
-                'Can only be rejected by the agent or the payee'
+                'Can only be rejected by the agent'
             );
         });
 
@@ -284,23 +284,6 @@ contract('Clearable', (accounts) => {
             });
 
            assert.strictEqual((await clearable.balanceOf(payer)).toNumber(), 3);
-        });
-
-        it('should be rejectable by the payee and emit a ClearableTransferRejected event', async() => {
-            const tx = await clearable.rejectClearableTransfer(
-                operationId,
-                reason,
-                {from: payee}
-            );
-
-            truffleAssert.eventEmitted(tx, 'ClearableTransferRejected', (_event) => {
-                return _event.orderer === payee &&
-                    _event.operationId === operationId &&
-                    _event.reason === reason
-                    ;
-            });
-
-            assert.strictEqual((await clearable.balanceOf(payer)).toNumber(), 3);
         });
 
         it('should revert if it has been already rejected', async() => {

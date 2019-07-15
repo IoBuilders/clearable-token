@@ -29,12 +29,6 @@ The following diagram shows the sequence of a clearable transfer creation and ca
 
 ![Clearable Token: Clearable transfer cancelled by payer](https://www.plantuml.com/plantuml/img/VP0n3e9G44HxJh6Xqi8B_CA07C063x3oHqrSzYVxb_l39y46GpqpRoRJP6VpQPJgaM4jNQvKTm8sVWgeJrze7IXPXFN6cb-mawT0nNqxLpjl0RHlg0VwILlmNYY8Xqq3wm3P4l_vQpwGOT4ow0E9n6EQr0_zkptTsYNBeWOQomSp)
 
-### Clearable transfer rejected by payee
-
-The following diagram shows the sequence of a clearable transfer creation and rejected by the payee.
-
-![Clearable Token: Clearable transfer rejected by payee](https://www.plantuml.com/plantuml/img/VP0x3i8m44Jxd6AL2Weku08buG18A3d0WWSGEBQqtjoVh2Le757FvuscoygYonoQAKDwEXofFGMmy3M0nlH6R1qbyP1HEEOxPAV9aRc7VLDvhQ1_8AgZd_GDdgq5lf26BH0v4hnmqogw3IgJBRDg6VH4yCHpMgB-zLVjbm9TbtM8thxu0000)
-
 ### Clearable transfer rejected by agent
 
 The following diagram shows the sequence of a clearable transfer creation and rejected by the notary.
@@ -43,7 +37,7 @@ The following diagram shows the sequence of a clearable transfer creation and re
 
 ## State diagram
 
-![Clearable Token: State Diagram](https://www.plantuml.com/plantuml/img/dPAzJiGm48HxFyNMIFS25EYa4mKL2D4XYesz9ePbVLexYBmzjYy_5oaqL8xopSwChJscZ9g7BpQlDszmEDp1epfIShTmOaB5Zkb5KP8ddOYPpgP-a2UDbbBQqIziCt7_GtR8km4pCak773z94aGFPnn90PMW9tQ0ua1Y1lp6mDK3V5J8av6vglLFYuPpJzEKHMdYSbfYRcH9MwzKV_kXyEA4PLHpG5uzUqpG4GcuABHvbMVw8Bl_AZCogwQsYS9ZCIlVpCMa6riulfFacbvhRoDEb-gx6GipLwg_KvhvXGKF8K6GUM-WB5GUaZcIkBfMvXS0)
+![Clearable Token: State Diagram](https://www.plantuml.com/plantuml/img/dLAxJWGn3Epp5QwHxWSeq4ad2YeGeaCKtiJB1enpShA8_NkIt3vkOP5EL8aquvdnoFkOK5F_mURvwWLsknkuLqTAxXeEJAZOC3qfIcn9HyICRsNVoOC6Ip5ky6TiDN7xHRPFcmOJPEOCARoJH0Wj774W1LI2ZjW1YWC92V0JFHSDQ8D26eNCMQn_IbGuTJHEMPHApgybvehyTgiBFj8RsUq59-Z7n2MLB9nYtVOvGqwBEPucZxpaxZ12GoJWWj2g-Kk2BPooSH0UibZ-CsUHPgZc-4gIYdkfPcrnEDMpwJ5ZveprjqiLFs6-1H_1otIRa8yszT7iILmvtMy0)
 
 ## Install
 
