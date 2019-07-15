@@ -598,11 +598,11 @@ contract('Clearable', (accounts) => {
         });
     });
 
-    describe('defineClearableAgent', async() => {
+    describe('defineClearingAgent', async() => {
         it('should define a new clearable agent', async() => {
-            await clearable.defineClearableAgent(newAgent, {from: owner});
-            const isClearableAgent = await clearable.isClearableAgent(newAgent);
-            isClearableAgent == true;
+            await clearable.defineClearingAgent(newAgent, {from: owner});
+            const isClearingAgent = await clearable.isClearingAgent(newAgent);
+            isClearingAgent == true;
         });
     });
 });
