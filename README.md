@@ -4,9 +4,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/IoBuilders/clearable-token/badge.svg?branch=master)](https://coveralls.io/github/IoBuilders/clearable-token?branch=master)
 [![npm](https://img.shields.io/npm/v/eip2018.svg)](https://www.npmjs.com/package/eip2018)
 
-This is the reference implementation of [EIP Clearable Token](https://github.com/IoBuilders/EIPs/blob/eip-clearable-token/EIPS/eip-clearable-token.md). This implementation will change over time with the token standard and is not stable at the moment.
+This is the reference implementation of [EIP Clearable Token](https://github.com/ethereum/EIPs/pull/2018/files). This implementation will change over time with the token standard and is not stable at the moment.
 
-Feedback is appreciated and can given at [the discussion of the EIP](https://github.com/ethereum/EIPs/pull/2018/files).
+Feedback is appreciated and can given at [the discussion of the EIP](https://github.com/ethereum/EIPs/issues/2104).
 
 ## Summary
 
