@@ -9,11 +9,6 @@ contract Clearable is Holdable, IClearable, Ownable {
     using StringUtil for string;
 
     struct ClearableTransfer {
-        address orderer;
-        address from;
-        address to;
-        address clearableAgent;
-        uint256 value;
         ClearableTransferStatusCode status;
     }
 
@@ -50,8 +45,9 @@ contract Clearable is Holdable, IClearable, Ownable {
     }
 
     function cancelTransfer(string calldata operationId) external returns (bool) {
+        Hold storage newClearableHold = holds[operationId.toHash()];
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
-        require (msg.sender == newClearableTransfer.from, "Can only be processed by the payer");
+        require (msg.sender == newClearableHold.origin, "Can only be processed by the payer");
         require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered, "A transfer can only be cancelled in status Ordered");
         super._releaseHold(operationId);
         newClearableTransfer.status = ClearableTransferStatusCode.Cancelled;
@@ -70,10 +66,11 @@ contract Clearable is Holdable, IClearable, Ownable {
 
     function executeClearableTransfer(string calldata operationId) external returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
+        Hold storage newClearableHold = holds[operationId.toHash()];
         require (msg.sender == clearableAgent, "Can only be executed by the agent");
         require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess,  "A transfer can only be executed in status Ordered or InProcess");
-        super._setHoldToExecuted(operationId, newClearableTransfer.value);
-        super._transfer(newClearableTransfer.from, newClearableTransfer.to, newClearableTransfer.value);
+        super._setHoldToExecuted(operationId, newClearableHold.value);
+        super._transfer(newClearableHold.origin, newClearableHold.target, newClearableHold.value);
         newClearableTransfer.status = ClearableTransferStatusCode.Executed;
         emit ClearableTransferExecuted(msg.sender, operationId);
 
@@ -92,12 +89,13 @@ contract Clearable is Holdable, IClearable, Ownable {
     }
 
     function retrieveClearableTransferData(string calldata operationId) external view returns (address from, address to, uint256 value, ClearableTransferStatusCode status) {
-        ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
+        ClearableTransfer storage clearableTransferData = clearableTransfers[operationId.toHash()];
+        Hold storage newClearableHold = holds[operationId.toHash()];
         return(
-            newClearableTransfer.from,
-            newClearableTransfer.to,
-            newClearableTransfer.value,
-            newClearableTransfer.status
+            newClearableHold.origin,
+            newClearableHold.target,
+            newClearableHold.value,
+            clearableTransferData.status
             );
     }
 
@@ -140,12 +138,8 @@ contract Clearable is Holdable, IClearable, Ownable {
             value,
             0
         );
-        clearableTransfers[operationId.toHash()].orderer = orderer;
-        clearableTransfers[operationId.toHash()].from = from;
-        clearableTransfers[operationId.toHash()].to = to;
-        clearableTransfers[operationId.toHash()].clearableAgent = clearableAgent;
-        clearableTransfers[operationId.toHash()].value = value;
-        clearableTransfers[operationId.toHash()].status = ClearableTransferStatusCode.Ordered;
+        ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
+        newClearableTransfer.status = ClearableTransferStatusCode.Ordered;
         emit ClearableTransferOrdered(
             orderer,
             operationId,

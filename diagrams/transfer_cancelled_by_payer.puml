@@ -3,5 +3,5 @@ UserA -> "Clearable Token": orderTransfer(to: UserB)
 "Clearable Token" -> Agent: ClearableTransferOrdered
 UserA -> "Clearable Token": cancelTransfer
 "Clearable Token" -> UserA: release held amount
-"Clearable Token" -> UserA: ClearableTransferCancelled
+"Clearable Token" -> Agent: ClearableTransferCancelled
 @enduml

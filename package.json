@@ -27,7 +27,7 @@
   "keywords": [
     "eip",
     "erc",
-    "holdable",
+    "clearable",
     "solidity",
     "ethereum",
     "eth"

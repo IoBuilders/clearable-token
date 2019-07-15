@@ -2,11 +2,11 @@
 
 [![Build Status](https://travis-ci.org/IoBuilders/clearable-token.svg?branch=master)](https://travis-ci.org/IoBuilders/clearable-token)
 [![Coverage Status](https://coveralls.io/repos/github/IoBuilders/clearable-token/badge.svg?branch=master)](https://coveralls.io/github/IoBuilders/clearable-token?branch=master)
-[![npm](https://img.shields.io/npm/v/eip1996.svg)](https://www.npmjs.com/package/eip1996)
+[![npm](https://img.shields.io/npm/v/eip2018.svg)](https://www.npmjs.com/package/eip2018)
 
 This is the reference implementation of [EIP Clearable Token](https://github.com/IoBuilders/EIPs/blob/eip-clearable-token/EIPS/eip-clearable-token.md). This implementation will change over time with the token standard and is not stable at the moment.
 
-Feedback is appreciated and can given at [the discussion of the EIP](https://github.com/IoBuilders/EIPs/pull/1).
+Feedback is appreciated and can given at [the discussion of the EIP](https://github.com/ethereum/EIPs/pull/2018/files).
 
 ## Summary
 
@@ -28,7 +28,7 @@ The following diagram shows the sequence of the clearable transfer creation and 
 
 The following diagram shows the sequence of a clearable transfer creation and cancelled by the payer.
 
-![Clearable Token: Clearable transfer cancelled by payer](https://www.plantuml.com/plantuml/img/VP0n3e9G44HxJh6Xqi8B_CA07C063x3oHqrSzYVxb_l39y46GpqpRoRJP6VpQPJgaM4jNQvKTm8sVWgeJrze7IXPXFN6cb-mawT0nNqxLpjl0RHlg0VwILlmNYY8Xqq3wm3P4l_vQpwGOT4ow0E9n6EQr0_zkptTsYNBeWOQomSp)
+![Clearable Token: Clearable transfer cancelled by payer](https://www.plantuml.com/plantuml/img/bP0n3i9040Fxl6AL2We-S0LAo0DemWEMd069pPwqj_a_Tv520qAYjZsst6LdysMMvf9XFHsEr0u2DhuAQ4nFQ1ieMOIDnffli9sdGDLzsZSVtWhexr0Fz9QsuBbI47ysJQmJP4jyvw_vG8QYPT034eddjAZ_jsTOkwGiwg2nVF02)
 
 ### Clearable transfer rejected by agent
 
@@ -38,7 +38,7 @@ The following diagram shows the sequence of a clearable transfer creation and re
 
 ## State diagram
 
-![Clearable Token: State Diagram](https://www.plantuml.com/plantuml/img/dLAxJWGn3Epp5QwHxWSeq4ad2YeGeaCKtiJB1enpShA8_NkIt3vkOP5EL8aquvdnoFkOK5F_mURvwWLsknkuLqTAxXeEJAZOC3qfIcn9HyICRsNVoOC6Ip5ky6TiDN7xHRPFcmOJPEOCARoJH0Wj774W1LI2ZjW1YWC92V0JFHSDQ8D26eNCMQn_IbGuTJHEMPHApgybvehyTgiBFj8RsUq59-Z7n2MLB9nYtVOvGqwBEPucZxpaxZ12GoJWWj2g-Kk2BPooSH0UibZ-CsUHPgZc-4gIYdkfPcrnEDMpwJ5ZveprjqiLFs6-1H_1otIRa8yszT7iILmvtMy0)
+![Clearable Token: State Diagram](https://www.plantuml.com/plantuml/img/dL91JiCm4Bpx5Nj6wWSue4fL3vn0Y1lYiB7N9B2igxM3cjzZkqdQG90gJhOqipEpezt6X9hwJpOlDw-msTp1WpfIShUmOqB5XkbPKQ8d7H4plfLzBuyQBCMumf-nnSJ-IBPFgmOJPEOCANoGH0WU3ZYG0Yf1I-m0nO641FY57HSDy44XZKBc8jO_9IgSMXgdB4ebvzSISqL-kzK5d-YTxFg24_HZuffApfnYxVkIOOhQOeI6IC05eKNPrsGvSygIGNZ8OldFd4MQeVhX6qc2N4zfOscnEpMowZ5ZveBrjqiLFs6TXov29zCvGhxJr4Up9N7bMhy1)
 
 ## Install
 
@@ -53,7 +53,7 @@ To write your custom contracts, import it and extend it through inheritance.
 ```solidity
 pragma solidity ^0.5.0;
 
-import 'eip1996/contracts/Clearable.sol';
+import 'eip2018/contracts/Clearable.sol';
 
 contract MyClearable is Clearable {
     // your custom code
