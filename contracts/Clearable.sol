@@ -17,7 +17,7 @@ contract Clearable is Holdable, IClearable, Ownable {
     address clearingAgent;
 
     constructor() public{
-        clearingAgent = msg.sender; 
+        clearingAgent = msg.sender;
     }
 
     function orderTransfer(string calldata operationId, address to, uint256 value) external returns (bool) {
@@ -69,8 +69,7 @@ contract Clearable is Holdable, IClearable, Ownable {
         Hold storage newClearableHold = holds[operationId.toHash()];
         require (msg.sender == clearingAgent, "Can only be executed by the agent");
         require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess,  "A transfer can only be executed in status Ordered or InProcess");
-        super._setHoldToExecuted(operationId, newClearableHold.value);
-        super._transfer(newClearableHold.origin, newClearableHold.target, newClearableHold.value);
+        super._executeHold(operationId, newClearableHold.value);
         newClearableTransfer.status = ClearableTransferStatusCode.Executed;
         emit ClearableTransferExecuted(msg.sender, operationId);
 

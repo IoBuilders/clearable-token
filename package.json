@@ -4,11 +4,12 @@
   "description": "The clearing process turns the promise of a transfer into the actual movement of money from one account to another.",
   "main": "truffle-config.js",
   "dependencies": {
-    "eip1996": "^1.0.3",
+    "eip1996": "^1.0.4",
     "openzeppelin-solidity": "^2.3.0"
   },
   "devDependencies": {
     "ethlint": "^1.2.4",
+    "ganache-cli": "^6.4.5",
     "randomstring": "^1.1.5",
     "solidity-coverage": "^0.6.0-beta.5",
     "solc": "0.5.10",
@@ -18,7 +19,7 @@
   "scripts": {
     "coverage": "solidity-coverage",
     "lint": "solium -d contracts",
-    "test": "truffle test"
+    "test": "scripts/executeTests.sh"
   },
   "repository": {
     "type": "git",
