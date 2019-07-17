@@ -1,0 +1,15 @@
+@startuml
+[*] --> Ordered: ClearableTransferOrdered
+Ordered --> InProcess: ClearableTransferInProcess
+Ordered --> Executed: ClearableTransferExecuted
+Ordered: tokens of payer are held and not available for transfer
+InProcess: tokens of payer are held and not available for transfer and the payer can not cancell the transfer
+InProcess --> Rejected: ClearableTransferRejected
+InProcess --> Executed: ClearableTransferExecuted
+Executed: the full transfer has been done
+Ordered --> Rejected: ClearableTransferRejected
+Rejected: can only be called by the agent or payee
+Ordered --> Cancelled: ClearableTransferCancelled
+Cancelled: can only be called by the payee only if is in Ordered status
+@enduml
+
