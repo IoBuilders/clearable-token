@@ -4,6 +4,7 @@ import "eip1996/contracts/Holdable.sol";
 import "./IClearable.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
+
 contract Clearable is Holdable, IClearable, Ownable {
 
     using StringUtil for string;
@@ -31,7 +32,13 @@ contract Clearable is Holdable, IClearable, Ownable {
             );
     }
 
-    function orderTransferFrom(string calldata operationId, address from, address to, uint256 value) external returns (bool) {
+    function orderTransferFrom(
+        string calldata operationId,
+        address from,
+        address to,
+        uint256 value
+    ) external returns (bool)
+    {
         require(to != address(0), "Payee address must not be zero address");
         require(from != address(0), "Payer address must not be zero address");
         require(operators[from][msg.sender] == true, "This operator is not authorized");
@@ -68,7 +75,10 @@ contract Clearable is Holdable, IClearable, Ownable {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
         Hold storage newClearableHold = holds[operationId.toHash()];
         require (msg.sender == clearingAgent, "Can only be executed by the agent");
-        require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess,  "A transfer can only be executed in status Ordered or InProcess");
+        require (
+            newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess,
+            "A transfer can only be executed in status Ordered or InProcess"
+        );
         super._executeHold(operationId, newClearableHold.value);
         newClearableTransfer.status = ClearableTransferStatusCode.Executed;
         emit ClearableTransferExecuted(msg.sender, operationId);
@@ -79,7 +89,10 @@ contract Clearable is Holdable, IClearable, Ownable {
     function rejectClearableTransfer(string calldata operationId, string calldata reason) external returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
         require (msg.sender == clearingAgent, "Can only be rejected by the agent");
-        require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess, "A transfer can only be rejected in status Ordered or InProcess");
+        require (
+            newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess,
+            "A transfer can only be rejected in status Ordered or InProcess"
+        );
         super._releaseHold(operationId);
         newClearableTransfer.status = ClearableTransferStatusCode.Rejected;
         emit ClearableTransferRejected(msg.sender, operationId, reason);
@@ -87,7 +100,13 @@ contract Clearable is Holdable, IClearable, Ownable {
         return true;
     }
 
-    function retrieveClearableTransferData(string calldata operationId) external view returns (address from, address to, uint256 value, ClearableTransferStatusCode status) {
+    function retrieveClearableTransferData(string calldata operationId) external view returns (
+        address from,
+        address to,
+        uint256 value,
+        ClearableTransferStatusCode status
+    )
+    {
         ClearableTransfer storage clearableTransferData = clearableTransfers[operationId.toHash()];
         Hold storage newClearableHold = holds[operationId.toHash()];
         return(
@@ -118,16 +137,23 @@ contract Clearable is Holdable, IClearable, Ownable {
         return operators[from][operator];
     }
 
-    function defineClearingAgent (address newClearingAgent) onlyOwner external  returns (bool) {
+    function defineClearingAgent (address newClearingAgent) external onlyOwner returns (bool) {
         clearingAgent = newClearingAgent;
         return true;
     }
 
-    function isClearingAgent(address agent) external returns (bool) {
+    function isClearingAgent(address agent) external view returns (bool) {
         return agent == clearingAgent;
     }
 
-    function _orderTransfer(string memory operationId, address orderer, address from, address to, uint256 value) internal returns (bool) {
+    function _orderTransfer(
+        string memory operationId,
+        address orderer,
+        address from,
+        address to,
+        uint256 value
+    ) internal returns (bool)
+    {
         super._hold(
             operationId,
             orderer,
