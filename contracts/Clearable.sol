@@ -79,7 +79,8 @@ contract Clearable is Holdable, IClearable, Ownable {
             newClearableTransfer.status == ClearableTransferStatusCode.Ordered || newClearableTransfer.status == ClearableTransferStatusCode.InProcess,
             "A transfer can only be executed in status Ordered or InProcess"
         );
-        super._executeHold(operationId, newClearableHold.value);
+        super._setHoldToExecuted(operationId, newClearableHold.value);
+        super._transfer(newClearableHold.origin, newClearableHold.target, newClearableHold.value);
         newClearableTransfer.status = ClearableTransferStatusCode.Executed;
         emit ClearableTransferExecuted(msg.sender, operationId);
 
