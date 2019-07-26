@@ -21,7 +21,7 @@ contract Clearable is Holdable, IClearable, Ownable {
         clearingAgent = msg.sender;
     }
 
-    function orderTransfer(string calldata operationId, address to, uint256 value) external returns (bool) {
+    function orderTransfer(string memory operationId, address to, uint256 value) public returns (bool) {
         require(to != address(0), "Payee address must not be zero address");
         return _orderTransfer(
             operationId,
@@ -33,11 +33,11 @@ contract Clearable is Holdable, IClearable, Ownable {
     }
 
     function orderTransferFrom(
-        string calldata operationId,
+        string memory operationId,
         address from,
         address to,
         uint256 value
-    ) external returns (bool)
+    ) public returns (bool)
     {
         require(to != address(0), "Payee address must not be zero address");
         require(from != address(0), "Payer address must not be zero address");
@@ -51,7 +51,7 @@ contract Clearable is Holdable, IClearable, Ownable {
             );
     }
 
-    function cancelTransfer(string calldata operationId) external returns (bool) {
+    function cancelTransfer(string memory operationId) public returns (bool) {
         Hold storage newClearableHold = holds[operationId.toHash()];
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
         require (msg.sender == newClearableHold.origin, "Can only be processed by the payer");
@@ -62,7 +62,7 @@ contract Clearable is Holdable, IClearable, Ownable {
         return true;
     }
 
-    function processClearableTransfer(string calldata operationId) external returns (bool) {
+    function processClearableTransfer(string memory operationId) public returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
         require (msg.sender == clearingAgent, "Can only be processed by the agent");
         require (newClearableTransfer.status == ClearableTransferStatusCode.Ordered,  "A transfer can only be processed in status Ordered");
@@ -71,7 +71,7 @@ contract Clearable is Holdable, IClearable, Ownable {
         return true;
     }
 
-    function executeClearableTransfer(string calldata operationId) external returns (bool) {
+    function executeClearableTransfer(string memory operationId) public returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
         Hold storage newClearableHold = holds[operationId.toHash()];
         require (msg.sender == clearingAgent, "Can only be executed by the agent");
@@ -87,7 +87,7 @@ contract Clearable is Holdable, IClearable, Ownable {
         return true;
     }
 
-    function rejectClearableTransfer(string calldata operationId, string calldata reason) external returns (bool) {
+    function rejectClearableTransfer(string memory operationId, string memory reason) public returns (bool) {
         ClearableTransfer storage newClearableTransfer = clearableTransfers[operationId.toHash()];
         require (msg.sender == clearingAgent, "Can only be rejected by the agent");
         require (
@@ -101,7 +101,7 @@ contract Clearable is Holdable, IClearable, Ownable {
         return true;
     }
 
-    function retrieveClearableTransferData(string calldata operationId) external view returns (
+    function retrieveClearableTransferData(string memory operationId) public view returns (
         address from,
         address to,
         uint256 value,
@@ -118,7 +118,7 @@ contract Clearable is Holdable, IClearable, Ownable {
             );
     }
 
-    function authorizeClearableTransferOperator(address operator) external returns (bool) {
+    function authorizeClearableTransferOperator(address operator) public returns (bool) {
         require (operators[msg.sender][operator] == false, "The operator is already authorized");
 
         operators[msg.sender][operator] = true;
@@ -126,7 +126,7 @@ contract Clearable is Holdable, IClearable, Ownable {
         return true;
     }
 
-    function revokeClearableTransferOperator(address operator) external returns (bool) {
+    function revokeClearableTransferOperator(address operator) public returns (bool) {
         require (operators[msg.sender][operator] == true, "The operator is already not authorized");
 
         operators[msg.sender][operator] = false;
@@ -134,16 +134,16 @@ contract Clearable is Holdable, IClearable, Ownable {
         return true;
     }
 
-    function isClearableTransferOperatorFor(address operator, address from) external view returns (bool) {
+    function isClearableTransferOperatorFor(address operator, address from) public view returns (bool) {
         return operators[from][operator];
     }
 
-    function defineClearingAgent (address newClearingAgent) external onlyOwner returns (bool) {
+    function defineClearingAgent (address newClearingAgent) public onlyOwner returns (bool) {
         clearingAgent = newClearingAgent;
         return true;
     }
 
-    function isClearingAgent(address agent) external view returns (bool) {
+    function isClearingAgent(address agent) public view returns (bool) {
         return agent == clearingAgent;
     }
 
